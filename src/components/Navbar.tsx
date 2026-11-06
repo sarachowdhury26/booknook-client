@@ -35,7 +35,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden items-center gap-8 text-sm font-medium md:flex">
+        <div className="hidden items-center gap-8 text-sm font-medium text-[#2843c] md:flex">
           <Link href="/" className="hover:text-[#b47b45]">Home</Link>
           <Link href="/books" className="hover:text-[#b47b45]">All Books</Link>
 
