@@ -1,50 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 export default function Navbar() {
   const router = useRouter();
+  const [profileOpen, setProfileOpen] = useState(false);
 
-  const [user, setUser] = useState<any>(null);
-  const [profileOpen, setProfileOpen] = useState(false);useEffect(() => {
-  const checkUser = () => {
-    const token = localStorage.getItem("token");
-    const savedUser = localStorage.getItem("user");
+  const { data: session, isPending } = authClient.useSession();
+  const user = session?.user;
 
-    if (token && savedUser) {
-      try {
-        setUser(JSON.parse(savedUser));
-      } catch {
-        localStorage.removeItem("user");
-        setUser(null);
-      }
-    } else {
-      setUser(null);
-    }
-  };
+  const handleLogout = async () => {
+    await authClient.signOut();
 
-  checkUser();
-
-  window.addEventListener("auth-change", checkUser);
-  window.addEventListener("storage", checkUser);
-
-  return () => {
-    window.removeEventListener("auth-change", checkUser);
-    window.removeEventListener("storage", checkUser);
-  };
-}, []);
-
-
-  const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
 
-    setUser(null);
     setProfileOpen(false);
-
     router.push("/");
+    router.refresh();
   };
 
   return (
@@ -54,7 +30,6 @@ export default function Navbar() {
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#284d3c] text-xl text-white">
             B
           </span>
-
           <span className="text-2xl font-bold tracking-tight">
             Book<span className="text-[#b47b45]">Nook.</span>
           </span>
@@ -73,54 +48,49 @@ export default function Navbar() {
           )}
         </div>
 
-        {user ? (
-          <div className="relative">
-            <button
-              onClick={() => setProfileOpen(!profileOpen)}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#284d3c] font-bold text-white"
-            >
-              {user.name?.charAt(0)?.toUpperCase() || "U"}
-            </button>
+        {!isPending && (
+          user ? (
+            <div className="relative">
+              <button
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-[#284d3c] font-bold text-white"
+              >
+                {user.name?.charAt(0)?.toUpperCase() || "U"}
+              </button>
 
-            {profileOpen && (
-              <div className="absolute right-0 top-12 z-50 w-48 rounded-lg border bg-white p-3 shadow-lg">
-                <p className="mb-3 truncate font-semibold text-gray-800">
-                  {user.name}
-                </p>
+              {profileOpen && (
+                <div className="absolute right-0 top-12 z-50 w-48 rounded-lg border bg-white p-3 shadow-lg">
+                  <p className="mb-3 truncate font-semibold text-gray-800">
+                    {user.name}
+                  </p>
 
-                <Link
-                  href="/profile"
-                  onClick={() => setProfileOpen(false)}
-                  className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
-                >
-                  My Profile
-                </Link>
+                  <Link
+                    href="/profile"
+                    onClick={() => setProfileOpen(false)}
+                    className="block rounded px-3 py-2 text-sm hover:bg-gray-100"
+                  >
+                    My Profile
+                  </Link>
 
-                <button
-                  onClick={handleLogout}
-                  className="w-full rounded px-3 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
-                >
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div className="flex items-center gap-3">
-            <Link
-              href="/login"
-              className="rounded-full bg-[#284d3c] px-6 py-3 text-sm font-semibold text-white hover:bg-[#193729]"
-            >
-              Login
-            </Link>
-
-            <Link
-              href="/register"
-              className="rounded-full border border-[#284d3c] px-5 py-3 text-sm font-semibold text-[#284d3c] hover:bg-[#284d3c] hover:text-white"
-            >
-              Register
-            </Link>
-          </div>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full rounded px-3 py-2 text-left text-sm text-red-600 hover:bg-gray-100"
+                  >
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-3">
+              <Link href="/login" className="rounded-full bg-[#284d3c] px-6 py-3 text-sm font-semibold text-white">
+                Login
+              </Link>
+              <Link href="/register" className="rounded-full border border-[#284d3c] px-5 py-3 text-sm font-semibold text-[#284d3c]">
+                Register
+              </Link>
+            </div>
+          )
         )}
       </div>
     </nav>
