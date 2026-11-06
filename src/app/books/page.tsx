@@ -8,7 +8,7 @@ export default function BooksPage() {
   const [books, setBooks] = useState<any[]>([]);
 
 useEffect(() => {
-  fetch("http://localhost:5000/api/books")
+  fetch("https://booknook-server-9ypp.onrender.com/api/books")
     .then((res) => res.json())
     .then((data) => setBooks(data))
     .catch((error) => console.error(error));
