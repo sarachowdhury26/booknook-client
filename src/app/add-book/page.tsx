@@ -33,7 +33,7 @@ export default function AddBookPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/books", {
+     const res = await fetch("https://booknook-server-9ypp.onrender.com/api/books", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
