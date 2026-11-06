@@ -4,7 +4,7 @@ BookNook is an online library management platform where users can explore books,
 
 🌐 Live Website
 
-Live Link: Not deployed yet
+Live Link: https://booknook-client-delta.vercel.app/
 
 🚀 Features
 
